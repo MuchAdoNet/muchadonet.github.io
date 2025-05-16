@@ -45,11 +45,9 @@ const config = {
               {
                 themes: {
                   light: "light-plus",
-                  dark: "dark-plus"
+                  dark: "dark-plus",
                 },
                 langs: ["csharp"],
-                // alternatively, you can activate all bundled languages:
-                // langs: Object.keys(bundledLanguages) as BundledLanguage[]
               },
             ],
           ],        },

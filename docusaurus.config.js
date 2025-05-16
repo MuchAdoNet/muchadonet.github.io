@@ -5,6 +5,7 @@
 // See: https://docusaurus.io/docs/api/docusaurus-config
 
 import {themes as prismThemes} from 'prism-react-renderer';
+import rehypeShiki from "@shikijs/rehype";
 
 // This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
 
@@ -37,8 +38,21 @@ const config = {
       ({
         docs: {
           routeBasePath: '/',
-          sidebarPath: './sidebars.js'
-        },
+          sidebarPath: './sidebars.js',
+          beforeDefaultRehypePlugins: [ 
+            [ 
+              rehypeShiki,
+              {
+                themes: {
+                  light: "light-plus",
+                  dark: "dark-plus"
+                },
+                langs: ["csharp"],
+                // alternatively, you can activate all bundled languages:
+                // langs: Object.keys(bundledLanguages) as BundledLanguage[]
+              },
+            ],
+          ],        },
         blog: false,
         theme: {
           customCss: './src/css/custom.css',

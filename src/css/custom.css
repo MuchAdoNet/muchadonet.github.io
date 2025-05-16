@@ -40,3 +40,11 @@
 .markdown > h3 {
   --ifm-h3-font-size: 1.25rem;
 }
+
+[data-theme="dark"] pre {
+  color: var(--shiki-dark) !important;
+  background-color: var(--shiki-dark-bg) !important;
+}
+[data-theme="dark"] pre span {
+  color: var(--shiki-dark) !important;
+}

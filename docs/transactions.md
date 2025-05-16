@@ -9,30 +9,31 @@ To start a database transaction, call `BeginTransactionAsync` on the connector. 
 ```csharp
 await using var connector = CreateConnector();
 
-await connector.BeginTransactionAsync();
+await using (await connector.BeginTransactionAsync())
+{
+    await connector.Command("""
+        create table widgets (
+            id integer primary key autoincrement,
+            name text not null,
+            height real not null);
+        """).ExecuteAsync();
 
-await connector.Command("""
-    create table widgets (
-        id integer primary key autoincrement,
-        name text not null,
-        height real not null);
-    """).ExecuteAsync();
+    await connector.Command("""
+        insert into widgets (name, height)
+            values ('First', 6.875);
+        insert into widgets (name, height)
+            values ('Second', 3.1415);
+        """).ExecuteAsync();
 
-await connector.Command("""
-    insert into widgets (name, height)
-        values ('First', 6.875);
-    insert into widgets (name, height)
-        values ('Second', 3.1415);
-    """).ExecuteAsync();
-
-await connector.CommitTransactionAsync();
+    await connector.CommitTransactionAsync();
+}
 ```
 
-:::note
-ADO.NET requres that the `Transaction` property of [`IDbCommand`](https://docs.microsoft.com/dotnet/api/system.data.idbcommand) be set to the current transaction. `DbConnector` takes care of that automatically when creating and executing commands.
-:::
+When the object returned from `BeginTransactionAsync` is disposed, the transaction is disposed, which rolls back the transaction if it has not been committed, e.g. if an exception is thrown.
 
-You can optionally dispose the object returned from `BeginTransactionAsync` to dispose the transaction, which rolls back the transaction if it has not already been committed. The transaction will also be disposed when the connector is disposed, so the returned object can usually be ignored.
+:::note
+ADO.NET requres that the `Transaction` property of [`IDbCommand`](https://docs.microsoft.com/dotnet/api/system.data.idbcommand) be set to the current transaction. MuchAdo takes care of that automatically when creating and executing commands.
+:::
 
 You can explicitly roll back the current transaction with `RollbackTransactionAsync`, but that's not typically necessary, since an uncommitted transaction will be rolled back when it is disposed.
 

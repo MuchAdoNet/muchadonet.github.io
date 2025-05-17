@@ -22,24 +22,24 @@ The **MuchAdo** class library provides an intuitive API for working with ADO.NET
 
 ## Databases
 
-MuchAdo works with any ADO.NET database provider, but if you are using a database provider with its own MuchAdo package, you can use it to get better default settings for that database. Each provider-specific package has its own connector class that derives from `DbConnector`.
+MuchAdo works with any ADO.NET database provider, but if you are using a database provider with its own MuchAdo package, you can use it for provider-specific features and settings. Each provider-specific package has its own [connector class](./connections.md).
 
 ### MySql
 
-Use [MuchAdo.MySql](https://www.nuget.org/packages/MuchAdo.MySql) with [MySqlConnector](https://mysqlconnector.net/), the recommended provider for [MySQL](https://www.mysql.com/).
+Use [MuchAdo.MySql](https://www.nuget.org/packages/MuchAdo.MySql) with [MySqlConnector](https://mysqlconnector.net/), the recommended provider for [MySQL](https://www.mysql.com/). The connector class is `MySqlDbConnector`.
 
 ### PostgreSQL
 
-Use [MuchAdo.Npgsql](https://www.nuget.org/packages/MuchAdo.Npgsql) with [Npgsql](https://www.npgsql.org/), the recommended provider for [PostgreSQL](https://www.postgresql.org/).
+Use [MuchAdo.Npgsql](https://www.nuget.org/packages/MuchAdo.Npgsql) with [Npgsql](https://www.npgsql.org/), the recommended provider for [PostgreSQL](https://www.postgresql.org/). The connector class is `NpgsqlDbConnector`.
 
 ### SQLite
 
-Use [MuchAdo.Sqlite](https://www.nuget.org/packages/MuchAdo.Sqlite) with [Microsoft.Data.Sqlite](https://learn.microsoft.com/en-us/dotnet/standard/data/sqlite/), the recommneded provider for [SQLite](https://www.sqlite.org/).
+Use [MuchAdo.Sqlite](https://www.nuget.org/packages/MuchAdo.Sqlite) with [Microsoft.Data.Sqlite](https://learn.microsoft.com/en-us/dotnet/standard/data/sqlite/), the recommneded provider for [SQLite](https://www.sqlite.org/). The connector class is `SqliteDbConnector`.
 
 ### Microsoft SQL Server
 
-Use the standard [MuchAdo](https://www.nuget.org/packages/MuchAdo) NuGet package with [Microsoft.Data.SqlClient](https://learn.microsoft.com/en-us/sql/connect/ado-net/introduction-microsoft-data-sqlclient-namespace) or the older [System.Data.SqlClient](https://learn.microsoft.com/en-us/dotnet/api/system.data.sqlclient). Please [create an issue](https://github.com/MuchAdoNet/MuchAdo/issues) if you think SQL Server should have its own provider-specific package!
+Use the standard [MuchAdo](https://www.nuget.org/packages/MuchAdo) NuGet package with [Microsoft.Data.SqlClient](https://learn.microsoft.com/en-us/sql/connect/ado-net/introduction-microsoft-data-sqlclient-namespace) or the older [System.Data.SqlClient](https://learn.microsoft.com/en-us/dotnet/api/system.data.sqlclient). The connector class is `DbConnector`. Please [create an issue](https://github.com/MuchAdoNet/MuchAdo/issues) if you think SQL Server should have its own provider-specific package!
 
 ### Other databases
 
-Again, MuchAdo works with any ADO.NET database provider, but [let us know](https://github.com/MuchAdoNet/MuchAdo/issues) if your favorite provider doesn't work or should have its own provider-specific package.
+The standard [MuchAdo](https://www.nuget.org/packages/MuchAdo) NuGet package should work with any ADO.NET database provider, but [let us know](https://github.com/MuchAdoNet/MuchAdo/issues) if your favorite provider doesn't work or should have its own provider-specific package.

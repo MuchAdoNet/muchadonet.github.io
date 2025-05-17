@@ -16,17 +16,7 @@ Like `IDbConnection`, `DbConnector` is not thread-safe, so you will need one ins
 private DbConnector CreateConnector() => new DbConnector(CreateConnection());
 ```
 
-`DbConnector` works with any ADO.NET database provider, but if you are using a database provider with its own MuchAdo package, you can use it to get better default settings for that database. Each provider-specific package has its own connector class that derives from `DbConnector`.
-
-|  ADO.NET Provider | MuchAdo Package | MuchAdo Connector |
-| --- | --- | --- |
-| [MySqlConnector](https://mysqlconnector.net/) | [MuchAdo.MySql](https://www.nuget.org/packages/MuchAdo.MySql) | MySqlDbConnector |
-| [Npgsql](https://www.npgsql.org/) | [MuchAdo.Npgsql](https://www.nuget.org/packages/MuchAdo.Npgsql) | NpgsqlDbConnector |
-| [Microsoft.Data.Sqlite](https://learn.microsoft.com/en-us/dotnet/standard/data/sqlite/) | [MuchAdo.Sqlite](https://www.nuget.org/packages/MuchAdo.Sqlite) | SqliteDbConnector |
-| [Microsoft.Data.SqlClient](https://learn.microsoft.com/en-us/sql/connect/ado-net/introduction-microsoft-data-sqlclient-namespace) | [MuchAdo](https://www.nuget.org/packages/MuchAdo) | DbConnector |
-| any ADO.NET provider | [MuchAdo](https://www.nuget.org/packages/MuchAdo) | DbConnector |
-
-For example, use `MySqlDbConnector` with `MySqlConnection`:
+If you are using a database provider with [its own MuchAdo package](./index.md), use the corresponding connector class that derives from `DbConnector`. For example, with MuchAdo.MySql, you would create a `MySqlDbConnector` with a `MySqlConnection`.
 
 ```csharp
 private MySqlDbConnector CreateConnector() =>

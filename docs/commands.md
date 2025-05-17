@@ -38,6 +38,10 @@ For other ways to specify parameters, see Parameters.
 
 To set the command timeout, which overrides the default command timeout, chain a call to `WithTimeout` immediately before executing the command.
 
+`WithTimeout` accepts a `TimeSpan`, which is rounded up to the nearest second when used to set `IDbCommand.CommandTimeout`. You can use `Timeout.InfiniteTimeSpan` or `TimeSpan.Zero` to wait indefinitely.
+
+Most ADO.NET providers have a mechanism for specifying the default command timeout, but you can also override it with `DbConnectorSettings.DefaultTimeout`.
+
 ## Stored Procedures
 
 To execute a stored procedure, call `StoredProcedure` instead of `Command` and pass the name of the stored procedure instead of a SQL statement.

@@ -1,10 +1,10 @@
 ---
-sidebar_position: 2
+sidebar_position: 3
 ---
 
 # Connections
 
-To use MuchAdo, create a `DbConnector` by calling its constructor with a newly created `IDbConnection`, which you can either get from `DbDataSource.CreateConnection` or by creating the connection directly.
+To use MuchAdo, create a `DbConnector` by calling its constructor with a newly created `IDbConnection`, which you can either get from `DbDataSource.CreateConnection` or by creating the connection directly. Dispose the connector when you are done with it, which will automatically dispose the database connection.
 
 ```csharp
 await using var connector = new DbConnector(dataSource.CreateConnection());
@@ -16,7 +16,7 @@ Like `IDbConnection`, `DbConnector` is not thread-safe, so you will need one ins
 private DbConnector CreateConnector() => new DbConnector(CreateConnection());
 ```
 
-If you are using a database provider with [its own MuchAdo package](./index.md), use the corresponding connector class that derives from `DbConnector`. For example, with MuchAdo.MySql, you would create a `MySqlDbConnector` with a `MySqlConnection`.
+If you are using a database provider with [its own MuchAdo package](./databases.md), use the corresponding connector class that derives from `DbConnector`. For example, with MuchAdo.MySql, you would create a `MySqlDbConnector` with a `MySqlConnection`.
 
 ```csharp
 private MySqlDbConnector CreateConnector() =>

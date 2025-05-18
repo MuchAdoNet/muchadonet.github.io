@@ -1,28 +1,28 @@
 ---
-sidebar_position: 3
+sidebar_position: 4
 ---
 
 # Commands
 
-To execute a SQL statement, call `Command` on the connector with the SQL you want to execute, chained with a call to `ExecuteAsync` to execute that SQL. `ExecuteAsync` returns the number of rows affected (or whatever `ExecuteNonQuery` returns for your provider).
+To execute a SQL statement, call `Command` on the connector with the SQL you want to execute, chained with a call to `ExecuteAsync` to execute that SQL. `ExecuteAsync` returns the number of rows affected (or whatever `ExecuteNonQueryAsync` returns for your provider).
 
 ## Data Records
 
 If the SQL statement returns data records, call `QueryAsync<T>`, which maps each data record to the specified type and returns an `IReadOnlyList<T>`.
 
-If the data record has a single field, set T to the type of that field value.
+If the data record has a single field, set `T` to the type of that field value.
 
-If the data record has multiple fields, you can read them by position into the items of a tuple or by name into the properties of a DTO.
+If the data record has multiple fields, you can read them by position into the items of a tuple or by name into the properties of a DTO. The tuple names do not affect data mapping, so be sure the tuple fields are in the right order.
 
-For more details on how data records are read, see Data Mapping.
+There are many other ways to map data records to types. For more details, see Data Mapping.
 
 If the SQL statement always returns a single data record, you can call `QuerySingleAsync<T>`, which returns an object of type `T` for data that record, but throws an exception if the query returns no data records or multiple data records.
 
 If you would rather ignore any additional data records after the first, call `QueryFirstAsync<T>` instead.
 
-If you don't want to throw an exception when there are no data records, call `QuerySingleOrDefaultAsync<T>` or `QueryFirstOrDefaultAsync<T>`, which return `default(T)` when there are no data records to read.
+If you don't want to throw an exception when there are no data records, call `QuerySingleOrDefaultAsync<T>` or `QueryFirstOrDefaultAsync<T>`, which return `default(T)` when the query returns no data records.
 
-Reading all of the data records at once is usually best for performance, but if you would rather read the data records one at a time, use await foreach with `EnumerateAsync<T>`.
+Reading all of the data records at once is usually best for performance, but if you would rather read the data records one at a time, use `await foreach` with `EnumerateAsync<T>`.
 
 ## Parameters
 

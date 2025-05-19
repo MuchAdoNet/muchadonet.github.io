@@ -33,9 +33,8 @@ Use the [MuchAdo.Sqlite](https://www.nuget.org/packages/MuchAdo.Sqlite) NuGet pa
 
 ## SQL Server
 
-Use the [MuchAdo.SqlServer](https://www.nuget.org/packages/MuchAdo.SqlServer) NuGet package if you are using [Microsoft.Data.SqlClient](https://learn.microsoft.com/en-us/sql/connect/ado-net/introduction-microsoft-data-sqlclient-namespace), the recommended provider for [Microsoft SQL Server](https://learn.microsoft.com/en-us/sql/connect/ado-net/introduction-microsoft-data-sqlclient-namespace). The connector class is `SqlDbConnector`. Key enhancements:
+Use the [MuchAdo.SqlServer](https://www.nuget.org/packages/MuchAdo.SqlServer) NuGet package if you are using [Microsoft.Data.SqlClient](https://learn.microsoft.com/en-us/sql/connect/ado-net/introduction-microsoft-data-sqlclient-namespace), the recommended provider for [Microsoft SQL Server](https://learn.microsoft.com/en-us/sql/connect/ado-net/introduction-microsoft-data-sqlclient-namespace). The connector class is `SqlServerDbConnector`. Key enhancement:
 
-* supports async database access and command batches in older .NET frameworks
 * uses brackets when quoting SQL identifiers
 
 ## Other databases

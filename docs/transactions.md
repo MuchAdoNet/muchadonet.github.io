@@ -7,23 +7,17 @@ sidebar_position: 6
 To start a database transaction, call `BeginTransactionAsync` on the connector. To commit the transaction, call `CommitTransactionAsync` on the connector, which disposes the transaction after it is committed.
 
 ```csharp
-await using var connector = CreateConnector();
-
+long widgetId;
 await using (await connector.BeginTransactionAsync())
 {
-    await connector.Command("""
-        create table widgets (
-            id int not null auto_increment primary key,
-            name text not null,
-            height real not null);
-        """).ExecuteAsync();
-
-    await connector.Command("""
-        insert into widgets (name, height)
-            values ('First', 6.875);
-        insert into widgets (name, height)
-            values ('Second', 3.1415);
-        """).ExecuteAsync();
+    var existingWidgetId = await connector
+        .CommandFormat($"select id from widgets where name = {name}")
+        .QuerySingleOrDefaultAsync<long?>();
+    widgetId = existingWidgetId ?? await connector
+        .CommandFormat(
+            $"insert into widgets (name, height) values ({name}, {height})")
+        .Command("select last_insert_id()")
+        .QuerySingleAsync<long>();
 
     await connector.CommitTransactionAsync();
 }
@@ -35,7 +29,7 @@ When the object returned from `BeginTransactionAsync` is disposed, the transacti
 ADO.NET requres that the `Transaction` property of [`IDbCommand`](https://docs.microsoft.com/dotnet/api/system.data.idbcommand) be set to the current transaction. MuchAdo takes care of that automatically when creating and executing commands.
 :::
 
-`BeginTransactionAsync` has an overload that takes an [`IsolationLevel`](https://learn.microsoft.com/en-us/dotnet/api/system.data.isolationlevel). The default isolation level is provider-specific, but you can also override it via `DbConnectorSettings.DefaultIsolationLevel`.
+`BeginTransactionAsync` has an overload that takes an [`IsolationLevel`](https://learn.microsoft.com/en-us/dotnet/api/system.data.isolationlevel). The default isolation level is provider-specific, but you can also override it with the `DefaultIsolationLevel` connector setting.
 
 :::tip
 If you are using MuchAdo.Sqlite, there are additional overloads that include the `deferred` parameter for creating [deferred transactions](https://learn.microsoft.com/en-us/dotnet/standard/data/sqlite/transactions#deferred-transactions).

@@ -20,9 +20,6 @@ var shortWidgets = await connector
 * read multiple result sets from [command batches](./command-batches.md)
 * track the [current transaction](./transactions.md) for correct command execution
 * [map data records](./data-mapping.md) into simple types, tuples, and DTOs
-* use formatted strings to inject [command parameters](./parameters.md)
-* use SQL fragments to [build complex SQL statements](./building-sql.md)
-* read database records all at once or one at a time
-* call synchronous methods or asynchronous methods with cancellation
-* execute stored procedures with parameters
+* use [formatted SQL](./formatted-sql.md) to inject parameters and build SQL statements
+* execute stored procedures with [parameters](./parameters.md)
 * prepare and/or cache database commands for better performance

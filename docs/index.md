@@ -15,14 +15,14 @@ var shortWidgets = await connector
 
 ## Key Features
 
-* generate SQL and parameters optimized for each [database provider](./databases.md)
 * open and close [database connections](./connections.md) automatically
-* use formatted strings to safely inject parameters and build complex SQL statements
-* map SELECT statements into simple types, tuples, and DTOs
+* use a fluent API to [execute commands](./commands.md) and read data
+* read multiple result sets from [command batches](./command-batches.md)
 * track the [current transaction](./transactions.md) for correct command execution
-* expand collections for IN clauses and bulk INSERT
+* [map data records](./data-mapping.md) into simple types, tuples, and DTOs
+* use formatted strings to inject [command parameters](./parameters.md)
+* use SQL fragments to [build complex SQL statements](./building-sql.md)
 * read database records all at once or one at a time
 * call synchronous methods or asynchronous methods with cancellation
-* read multiple result sets from multi-statement commands or batches
 * execute stored procedures with parameters
 * prepare and/or cache database commands for better performance

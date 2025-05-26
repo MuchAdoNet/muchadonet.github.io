@@ -85,7 +85,7 @@ var widgetIds = await connector
 
 This may look like a possible SQL injection vulnerability, but it is not, since the injected value is replaced with a parameter placeholder, and the value itself is passed to the command via parameter. The exact syntax of the parameter placeholder depends on the database provider; by default, it uses arbitrarily named parameters like `@ado1` and `@ado2`, but some providers use `$1` and `$2` or even just `?`.
 
-For other ways to specify parameters, see [Parameters](./parameters.md). For more about formatted SQL, see [Building SQL](./building-sql.md).
+There is much more to learn about [formatted SQL](./formatted-sql.md) and [parameters](./parameters.md) later in the documentation.
 
 ## Setting the timeout
 
@@ -101,3 +101,11 @@ var averageHeight = await connector
 ```
 
 Most ADO.NET providers have a mechanism for specifying the default command timeout, but you can also override it with the `DefaultTimeout` connector setting.
+
+## Stored procedures
+
+MuchAdo also supports stored procedures. Simply call `StoredProcedure` instead of `Command` and pass the name of the stored procedure instead of a SQL query.
+
+```csharp
+connector.StoredProcedure("CreateWidget", ("name", name), ("size", size)).Execute();
+```

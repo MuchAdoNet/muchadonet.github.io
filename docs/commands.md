@@ -40,7 +40,7 @@ var widgetTuples = await connector
 You can also read record fields by name into the properties of a DTO.
 
 ```csharp
-sealed record Widget(long Id, string Name, double? Height);
+record Widget(long Id, string Name, double? Height);
 ...
 var widgets = await connector
     .Command("select id, name, height from widgets")

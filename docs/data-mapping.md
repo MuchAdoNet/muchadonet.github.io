@@ -57,7 +57,7 @@ If the type isn't one of the types listed above or below, it is assumed to be a 
 When a DTO type is used, a new instance of the DTO is created, and each record field is mapped to a DTO property whose name matches the field name, ignoring case and any underscores (so `full_name` would map successfully to `FullName`, for example). Read-only properties can be set if there is a constructor with corresponding parameters.
 
 ```csharp
-sealed record Widget(long Id, string Name, double? Height);
+record Widget(long Id, string Name, double? Height);
 ...
 var widgets = await connector
     .Command("select id, name, height from widgets")
@@ -120,7 +120,7 @@ string firstWidgetName = dynamicWidgets[0].name;
 
 :::tip
 To avoid confusion, use `object` when mapping a single field and `dynamic` when mapping multiple fields.
-:::tip
+:::
 
 ## Dictionaries
 
@@ -159,5 +159,4 @@ To directly support types not mentioned above, you can create a custom mapping:
 
 * Derive a class from `DbTypeMapper<T>`, overriding the `FieldCount` and `MapCore` methods.
 * Derive a class from `DbTypeMapperFactory`, overriding `TryCreateTypeMapper<T>` and returning an instance of your type mapper when the type matches.
-* Create a `With` extension method that adds an instance of your type mapper factory to a `DbDataMapper` instance.
-* Call that extension method on your default data mapper and assign the returned data mapper to the `DataMapper` connector setting.
+* Set the `DataMapper` connector setting to a data mapper that includes an instance of your type mapper factory.

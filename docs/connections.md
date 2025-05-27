@@ -4,7 +4,7 @@ sidebar_position: 3
 
 # Connections
 
-To use MuchAdo, create a `DbConnector` by calling its constructor with a newly created `IDbConnection`, which you can either get from `DbDataSource.CreateConnection` or by creating the connection directly. Dispose the connector when you are done with it, which will automatically dispose the database connection.
+To use MuchAdo, create a `DbConnector` by calling its constructor with a newly created [`IDbConnection`](https://learn.microsoft.com/en-us/dotnet/api/system.data.idbconnection), which you can either get from `DbDataSource.CreateConnection` or by creating the connection directly. Dispose the connector when you are done with it, which will automatically dispose the database connection.
 
 ```csharp
 await using var connector = new DbConnector(dataSource.CreateConnection());
@@ -51,4 +51,4 @@ If you want to open the connection before executing the first command, call `Ope
 
 If you need to access the `IDbConnection` that is wrapped by the connector, use the `Connection` property. To automatically open the connection if it is not already open, use `GetOpenConnectionAsync` instead.
 
-To attach an `IDbConnection` to a connector without disposing it when the connector is disposed, use `DbConnectorSettings.NoDisposeConnection`. If the attached connection is open, it will be kept open even after the connector is disposed.
+To attach an `IDbConnection` to a connector without disposing it when the connector is disposed, use the `NoDisposeConnection` connector setting. If the attached connection is open, it will be kept open even after the connector is disposed.

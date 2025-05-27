@@ -4,7 +4,7 @@ sidebar_position: 5
 
 # Command Batches
 
-To execute multiple SQL statements in one database call, which can improve performance for databases with significant latency, chain multiple calls to `Command` and/or `CommandFormat`. MuchAdo uses ADO.NET provider support for `DbBatch` to efficiently execute multiple commands.
+To execute multiple SQL statements in one database call, which can improve performance for databases with significant latency, chain multiple calls to `Command` and/or `CommandFormat`. MuchAdo uses ADO.NET provider support for [`DbBatch`](https://learn.microsoft.com/en-us/dotnet/api/system.data.common.dbbatch) to efficiently execute multiple commands.
 
 ```csharp
 var newWidgetId = connector
@@ -25,9 +25,9 @@ var nextWidgetId = connector
     .QuerySingle<long>();
 ```
 
-If only one of the SQL statements returns data records, or if all of the statements return the same kind of data record, you can read the data with normal methods like `QueryAsync<T>`.
+If only one of the SQL statements returns data records, or if all of the statements return the same kind of record, you can read the data as usual with methods like `QueryAsync<T>`.
 
-If each statement returns a different kind of data record, call `QueryMultiple` to get a disposable set of results. For each statement that returns data records, call `ReadAsync<T>` or `EnumerateAsync<T>` on the result set.
+If each statement returns a different kind of data record, call `QueryMultiple` to get a disposable set of results. For each statement that returns records, call `ReadAsync<T>` or `EnumerateAsync<T>` on the result set.
 
 ```csharp
 await using (var reader = await connector

@@ -4,7 +4,7 @@ sidebar_position: 4
 
 # Commands
 
-To execute a SQL statement, call `Command` on the connector with the SQL you want to execute, chained with a call to `ExecuteAsync` to execute that SQL. `ExecuteAsync` returns the number of rows affected (or whatever `ExecuteNonQueryAsync` returns for your provider).
+To execute a SQL statement, call `Command` on the connector with the SQL you want to execute, chained with a call to `ExecuteAsync` to execute that SQL. `ExecuteAsync` returns the number of rows affected.
 
 ```csharp
 await connector
@@ -12,16 +12,16 @@ await connector
         create table widgets (
             id bigint not null auto_increment primary key,
             name text not null,
-            height real not null)
+            height real)
         """)
     .ExecuteAsync();
 ```
 
-## Reading data records
+## Reading records
 
-If the SQL statement returns data records, call `QueryAsync<T>`, which maps each data record to the specified type and returns an `IReadOnlyList<T>`.
+If the SQL statement returns data records, call `QueryAsync<T>`, which maps each record to the specified type and returns an [`IReadOnlyList<T>`](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.ireadonlylist-1).
 
-If the data record has a single field, set `T` to the type of that field value.
+If the record has a single field, set `T` according to the type of that field value.
 
 ```csharp
 var widgetNames = await connector
@@ -29,7 +29,7 @@ var widgetNames = await connector
     .QueryAsync<string>();
 ```
 
-If the data record has multiple fields, you can read them by position into the items of a tuple. The tuple names do not affect data mapping, so be sure the tuple fields are in the right order.
+If the record has multiple fields, you can read them by position into the items of a tuple. The tuple names do not affect data mapping, so be sure the tuple fields are in the right order.
 
 ```csharp
 var widgetTuples = await connector
@@ -37,19 +37,21 @@ var widgetTuples = await connector
     .QueryAsync<(long Id, string Name)>();
 ```
 
-You can also read data record fields by name into the properties of a DTO.
+You can also read record fields by name into the properties of a DTO.
 
 ```csharp
-private sealed record Widget(int Id, string Name, double Height);
+sealed record Widget(long Id, string Name, double? Height);
 ...
 var widgets = await connector
     .Command("select id, name, height from widgets")
     .QueryAsync<Widget>();
 ```
 
-There are many other ways to map data records to types. For more details, see [Data Mapping](./data-mapping.md).
+There are many other ways to map records to types. For more details, see [Data Mapping](./data-mapping.md).
 
-If the SQL statement always returns a single data record, you can call `QuerySingleAsync<T>`, which returns an object of type `T` for data that record, but throws an exception if the query returns no data records or multiple data records.
+### Single records
+
+If the SQL statement always returns a single record, you can call `QuerySingleAsync<T>`, which returns an object of type `T` for that record, but throws an exception if the query returns no records or multiple records.
 
 ```csharp
 var widgetCount = await connector
@@ -57,14 +59,16 @@ var widgetCount = await connector
     .QuerySingleAsync<long>();
 ```
 
-If you would rather ignore any additional data records after the first, call `QueryFirstAsync<T>` instead.
+If you would rather ignore any additional records after the first, call `QueryFirstAsync<T>` instead.
 
-If you don't want to throw an exception when there are no data records, call `QuerySingleOrDefaultAsync<T>` or `QueryFirstOrDefaultAsync<T>`, which return `default(T)` when the query returns no data records.
+If you don't want to throw an exception when there are no records, call `QuerySingleOrDefaultAsync<T>` or `QueryFirstOrDefaultAsync<T>`, which return `default(T)` when the query returns no data records.
 
-Reading all of the data records at once is usually best for performance, but if you would rather read the data records one at a time, use `await foreach` with `EnumerateAsync<T>`.
+### Lazy reading
+
+Reading all of the records at once is usually best for performance, but if you would rather read the records one at a time, use `await foreach` with `EnumerateAsync<T>`.
 
 ```csharp
-var widgetsById = new Dictionary<int, Widget>();
+var widgetsById = new Dictionary<long, Widget>();
 await foreach (var widget in connector
     .Command("select id, name, height from widgets")
     .EnumerateAsync<Widget>())
@@ -73,9 +77,13 @@ await foreach (var widget in connector
 }
 ```
 
+:::tip
+If you break out of the loop before all records have been read, the remainder of the data may still be read under the hood. It is best to avoid this situation by only querying for data that you need, but if you want to automatically cancel the command when all of the records haven't been read, set the `CancelUnfinishedCommands` connector setting.
+:::
+
 ## Using parameters
 
-The simplest way to specify command parameters is to call `CommandFormat` instead of `Command`, which uses formatted SQL to provide the parameter values in the SQL statement.
+The simplest way to specify command parameters is to call `CommandFormat` instead of `Command`, which uses [formatted SQL](./formatted-sql.md) to provide the parameter values in the SQL statement.
 
 ```csharp
 var widgetIds = await connector
@@ -83,15 +91,15 @@ var widgetIds = await connector
     .QueryAsync<long>();
 ```
 
-This may look like a possible SQL injection vulnerability, but it is not, since the injected value is replaced with a parameter placeholder, and the value itself is passed to the command via parameter. The exact syntax of the parameter placeholder depends on the database provider; by default, it uses arbitrarily named parameters like `@ado1` and `@ado2`, but some providers use `$1` and `$2` or even just `?`.
+This may look like a possible SQL injection vulnerability, but it is not, since the injected value is replaced with a parameter placeholder in the SQL statement, and the value itself is passed to the command via parameter. The exact syntax of the parameter placeholder depends on the database provider; by default, it uses arbitrarily named parameters like `@ado1` and `@ado2`, but some providers use `$1` and `$2` or even just `?`.
 
-There is much more to learn about [formatted SQL](./formatted-sql.md) and [parameters](./parameters.md) later in the documentation.
+There is much more to learn about [formatted SQL](./formatted-sql.md) and [parameters](./parameters.md) elsewhere in the documentation.
 
 ## Setting the timeout
 
 To set the command timeout, which overrides the default command timeout, chain a call to `WithTimeout` before executing the command.
 
-`WithTimeout` accepts a `TimeSpan`, which is rounded up to the nearest second when used to set `IDbCommand.CommandTimeout`. You can use `Timeout.InfiniteTimeSpan` or `TimeSpan.Zero` to wait indefinitely.
+`WithTimeout` accepts a [`TimeSpan`](https://learn.microsoft.com/en-us/dotnet/api/system.timespan), which is rounded up to the nearest second when used to set the actual [`CommandTimeout`](https://learn.microsoft.com/en-us/dotnet/api/system.data.idbcommand.commandtimeout). You can use `Timeout.InfiniteTimeSpan` or `TimeSpan.Zero` to wait indefinitely.
 
 ```csharp
 var averageHeight = await connector
@@ -100,12 +108,16 @@ var averageHeight = await connector
     .QuerySingleAsync<double?>();
 ```
 
-Most ADO.NET providers have a mechanism for specifying the default command timeout, but you can also override it with the `DefaultTimeout` connector setting.
+Most ADO.NET providers have their own mechanism for specifying the default command timeout, but you can also override it for MuchAdo with the `DefaultTimeout` connector setting.
 
 ## Stored procedures
 
-MuchAdo also supports stored procedures. Simply call `StoredProcedure` instead of `Command` and pass the name of the stored procedure instead of a SQL query.
+MuchAdo also supports stored procedures. Simply call `StoredProcedure` instead of `Command` and pass the name of the stored procedure instead of a SQL query, followed by any [parameters](./parameters.md).
 
 ```csharp
-connector.StoredProcedure("CreateWidget", ("name", name), ("size", size)).Execute();
+await connector
+    .StoredProcedure("create_widget",
+        Sql.NamedParam("widget_name", name),
+        Sql.NamedParam("widget_height", height))
+    .ExecuteAsync();
 ```

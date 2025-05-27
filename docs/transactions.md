@@ -26,7 +26,7 @@ await using (await connector.BeginTransactionAsync())
 When the object returned from `BeginTransactionAsync` is disposed, the transaction is disposed, which rolls back the transaction if it has not been committed, e.g. if an exception is thrown.
 
 :::info
-ADO.NET requres that the `Transaction` property of [`IDbCommand`](https://docs.microsoft.com/dotnet/api/system.data.idbcommand) be set to the current transaction. MuchAdo takes care of that automatically when creating and executing commands.
+ADO.NET requres that the [`Transaction`](https://learn.microsoft.com/en-us/dotnet/api/system.data.idbcommand.transaction) property of [`IDbCommand`](https://docs.microsoft.com/dotnet/api/system.data.idbcommand) be set to the current transaction. MuchAdo takes care of that automatically when creating and executing commands.
 :::
 
 `BeginTransactionAsync` has an overload that takes an [`IsolationLevel`](https://learn.microsoft.com/en-us/dotnet/api/system.data.isolationlevel). The default isolation level is provider-specific, but you can also override it with the `DefaultIsolationLevel` connector setting.

@@ -8,51 +8,89 @@ Formatted SQL uses string interpolation to build SQL statements from SQL fragmen
 
 Formatted SQL is most commonly used when calling the `CommandFormat` method on a connector, passing an interpolated string with parameter values. `CommandFormat` is actually a convenience method that is equivalent to calling `Sql.Format` and passing the returned `SqlSource` to the `Command` method.
 
+```csharp
+SqlSource sql = Sql.Format($"select id from widgets where name = {name}");
+long widgetId = await connector.Command(sql).QuerySingleAsync<long>();
+```
+
 A `SqlSource` represents a SQL fragment and any attached parameter values. The `Sql` static class contains many methods that create SqlSource objects.
 
-## Text
+## SQL Text
 
 `Sql.Format` is the most useful method for building SQL fragments. An unnamed parameter is substituted for each interpolated expression, unless the expression is a `SqlSource`, in which case the corresponding SQL fragment is substituted.
 
-`Sql.Raw` creates a SQL fragment from a raw SQL string with no parameter values.
+`Sql.Raw` creates a SQL fragment from a raw SQL string.
 
 `Sql.Empty` contains an empty SQL fragment, equivalent to `Sql.Raw("")`.
 
 `Sql.Name` surrounds the specified string with delimiters that prevent it from being interpreted as a SQL keyword. ANSI SQL uses double quotes for this, but some databases have their own syntax, so be sure to use the right MuchAdo package or `SqlSyntax`.
 
-## Concatenation
+```csharp
+var sql = Sql.Format($"""
+    select id from {Sql.Name(tableName)}
+    where id {Sql.Raw(reverse ? "<" : ">")} {id}
+    order by id {(reverse ? Sql.Raw("desc") : Sql.Empty)}
+    limit 1
+    """);
+return await connector.Command(sql).QuerySingleOrDefaultAsync<long?>();
+```
 
-`SqlSource` instances can be concatenated with the `+` operator, but there are usually better ways to build SQL from fragments, as documented below.
+## SQL Building
 
-As mentioned previously, `Sql.Format` can be used to build a `SqlSource` from other instances.
+`SqlSource` instances can be concatenated with the `+` operator or with `Sql.Concat`.
 
-Like the `+` operator, `Sql.Concat` concatenates any number of SQL fragments.
+`Sql.Intersperse` works like `string.Join`; it intersperses SQL fragments with the specified raw SQL separator. Empty fragments are ignored, rather than doubling up the separator.
 
-`Sql.Join` works like `string.Join`; it interleaves SQL fragments with the specified raw SQL separator. Empty fragments are ignored, rather than doubling up the separator.
+`Sql.Clauses` intersperses SQL fragments with newlines, equivalent to `Sql.Intersperse("\n", ...})"`.
 
-`Sql.Clauses` is shorthand for calling `Sql.Join` with a newline.
-
-`Sql.List` is shorthand for calling `Sql.Join` with a comma.
+`Sql.List` intersperses SQL fragments with commas, equivalent to `Sql.Intersperse(", ", ...})"`.
 
 `Sql.Tuple` is shorthand for a comma-separated list surrounded by parentheses, equivalent to `Sql.Format($"({Sql.List(...)})"`.
 
-## Keywords
+`Sql.Set` is like `Sql.Tuple`, but it throws an exception when the list is empty, since `in ()` is not valid SQL.
 
-There are a few methods that generate keywords. The advantage of these methods over typing the keyword directly is that the keyword is omitted if the arguments are missing or all empty.
+```csharp
+await connector
+    .CommandFormat($"""
+        insert into widgets (name, height)
+        values {Sql.List(widgets.Select(x =>
+            Sql.Tuple(Sql.Param(x.Name), Sql.Param(x.Height))))}
+        """)
+    .ExecuteAsync();
+```
 
-`Sql.Where` and `Sql.Having` generate a `WHERE` or `HAVING` keyword followed by the specified argument.
+## SQL Keywords
 
-`Sql.OrderBy` and `Sql.GroupBy` generate `ORDER BY` or `GROUP BY` keywords followed by the arguments separated by commas.
+There are a few methods that generate SQL keywords. The advantage of these methods over typing the keyword directly into formatted SQL is that the keyword is omitted if the arguments are missing or all empty.
 
-`Sql.And` and `Sql.Or` separate any non-empty arguments with `AND` or `OR` keywords. The entire expression is surrounded with parentheses, in case there is nesting. If there is only one non-empty argument, it is used as-is.
+`Sql.And` and `Sql.Or` intersperse non-empty arguments with `AND` or `OR` keywords. Each argument is surrounded with parentheses. If there is only one non-empty argument, it is used as-is.
+
+`Sql.Where` and `Sql.Having` generate a `WHERE` or `HAVING` keyword followed by the arguments, interspersed with `AND` keywords, as above.
+
+`Sql.OrderBy` and `Sql.GroupBy` generate `ORDER BY` or `GROUP BY` keywords followed by the arguments, interspersed with commas.
+
+```csharp
+var conditions = new List<SqlSource>();
+if (minHeight.HasValue)
+    conditions.Add(Sql.Format($"height >= {minHeight.Value}"));
+if (maxHeight.HasValue)
+    conditions.Add(Sql.Format($"height <= {maxHeight.Value}"));
+return await connector
+    .CommandFormat($"select count(*) from widgets {Sql.Where(conditions)}")
+    .QuerySingleAsync<int>();
+```
 
 ## Parameters
 
-Classes that represent one or more parameters are derived from `SqlParamSource`. When a parameter source is used in formatted SQL, parameter placeholders are generated that reference parameters with the corresponding values, comma-separated if there are more than one. Depending on the database, unnamed parameters use named placeholders like `@ado1`, numbered placeholders like `$1`, or positional placeholders like `?`. See [Parameters](./parameters.md) for more information about `SqlParamSource`.
+A `SqlParamSource` represents a list of parameters. It derives from `SqlSource`, and when one used as a SQL fragment, it generates parameter placeholders for parameters with the corresponding values, comma-separated in the SQL if there are more than one. See [Parameters](./parameters.md) for more information about `SqlParamSource`.
 
 `Sql.Param` creates an unnamed parameter with the specified value. The returned object has a `Value` property that can be set, if you want to reuse the object for multiple commands to save the allocation.
 
-`Sql.RepeatParam` creates an unnamed parameter designed to be used more than once in a single command. For databases that use named or numbered placeholders, the same placeholder is used each time the same object from `Sql.RepeatParam` is used, which could save bandwidth, depending on your database.
+:::info
+Depending on the database, unnamed parameters use named placeholders like `@ado1`, numbered placeholders like `$1`, or positional placeholders like `?`.
+:::
+
+`Sql.RepeatParam` creates an unnamed parameter designed to be used more than once in a single command. For databases that use named or numbered placeholders, the same placeholder is used each time the same object from `Sql.RepeatParam` is used, which could be more efficient, depending on your database.
 
 `Sql.Params` generates unnamed parameters from a collection. The collection is not copied; parameters will be generated from the items just in time. If the collection is empty, empty SQL will be produced, which could result in invalid SQL. Generally, you should check for an empty collection and bypass the command or add a conditional to generate valid SQL for that case.
 

@@ -25,9 +25,17 @@ var nextWidgetId = connector
     .QuerySingle<long>();
 ```
 
+:::tip
+Batching commands with embedded databases like SQLite may actually hurt performance. Consider executing each command separately instead.
+:::
+
+Note that any timeout specified by `WithTimeout` applies to the entire command batch, not an individual command.
+
+## Reading result sets
+
 If only one of the SQL statements returns data records, or if all of the statements return the same kind of record, you can read the data as usual with methods like `QueryAsync<T>`.
 
-If each statement returns a different kind of data record, call `QueryMultiple` to get a disposable set of results. For each statement that returns records, call `ReadAsync<T>` or `EnumerateAsync<T>` on the result set.
+If each statement returns a different kind of data record, call `QueryMultipleAsync` to get a disposable result set reader. For each statement that returns records, call `ReadAsync<T>` or `EnumerateAsync<T>`.
 
 ```csharp
 await using (var reader = await connector
@@ -40,8 +48,6 @@ await using (var reader = await connector
 }
 ```
 
-:::tip
-Batching commands with embedded databases like SQLite may actually hurt performance. Consider executing each command separately instead.
-:::
+## ADO.NET access
 
-Note that any timeout specified by `WithTimeout` applies to the entire command batch, not an individual command.
+While a command batch is being executed, the `ActiveBatch` property of the connector will be set to the corresponding `DbBatch`.

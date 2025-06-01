@@ -4,7 +4,9 @@ sidebar_position: 6
 
 # Transactions
 
-To start a database transaction, call `BeginTransactionAsync` on the connector. To commit the transaction, call `CommitTransactionAsync` on the connector, which disposes the transaction after it is committed.
+To start a database transaction, call `BeginTransactionAsync` on the connector. MuchAdo calls the corresponding method on the ADO.NET connection to get an [`IDbTransaction`](https://learn.microsoft.com/en-us/dotnet/api/system.data.idbtransaction), which it stores with the connector.
+
+To commit the transaction, call `CommitTransactionAsync` on the connector, which commits and then disposes the stored transaction.
 
 ```csharp
 long widgetId;
@@ -39,7 +41,7 @@ You can explicitly roll back the current transaction with `RollbackTransactionAs
 
 You can attach an existing `IDbTransaction` to the connector by calling `AttachTransaction`.
 
-If you need to access the `IDbTransaction` that is wrapped by the connector, use the `Transaction` property.
+If you need to access the `IDbTransaction` that is stored by the connector, use the `Transaction` property. If there is no active transaction, the property will be null.
 
 :::tip
 You can use the `Transaction` property to [create savepoints](https://learn.microsoft.com/en-us/dotnet/api/system.data.common.dbtransaction.save). If you would like MuchAdo to support savepoints directly, please [create an issue](https://github.com/MuchAdoNet/MuchAdo/issues)!

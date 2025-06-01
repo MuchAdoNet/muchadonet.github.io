@@ -93,7 +93,18 @@ var widgetIds = await connector
 
 This may look like a possible SQL injection vulnerability, but it is not, since the injected value is replaced with a parameter placeholder in the SQL statement, and the value itself is passed to the command via parameter. The exact syntax of the parameter placeholder depends on the database provider; by default, it uses arbitrarily named parameters like `@ado1` and `@ado2`, but some providers use `$1` and `$2` or even just `?`.
 
-There is much more to learn about [formatted SQL](./formatted-sql.md) and [parameters](./parameters.md) elsewhere in the documentation.
+Using this technique with a collection will create one parameter whose value is the collection. If you want to expand a non-empty collection into a parenthesized set of parameters for use with the `IN` keyword, use the `set` format specifier.
+
+```csharp
+var widgetsFromIds = await connector
+    .CommandFormat($"""
+        select id, name, height from widgets
+        where id in {widgetIds:set}
+        """)
+    .QueryAsync<Widget>();
+```
+
+For more information on using parameters with MuchAdo, see [Formatted SQL](./formatted-sql.md) and [Parameters](./parameters.md).
 
 ## Setting the timeout
 
@@ -121,3 +132,11 @@ await connector
         Sql.NamedParam("widget_height", height))
     .ExecuteAsync();
 ```
+
+## Cancellation
+
+To cancel a running command, cancel the `CancellationToken` passed to the method that executed the command, or call `Cancel` on the connector.
+
+## ADO.NET access
+
+ADO.NET uses [`IDbCommand`](https://learn.microsoft.com/en-us/dotnet/api/system.data.idbcommand) to represent a database command and its collection of parameters. MuchAdo creates this command object (and any parameter objects) just in time as needed when the command is executed. While a command is being executed, the `ActiveCommand` property of the connector will be set to the corresponding `IDbCommand`.

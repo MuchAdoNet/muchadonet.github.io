@@ -7,7 +7,7 @@ sidebar_position: 7
 ADO.NET uses the [`IDataRecord`](https://learn.microsoft.com/en-us/dotnet/api/system.data.idatarecord) interface (and classes derived from it) to represent the data provided when executing a database command. A data record has one or more fields; MuchAdo supports mapping those fields to instances of various types.
 
 :::info
-If, when mapping a data record to a type, there are unused fields, e.g. when mapping a data record with two fields to a single integer, MuchAdo will throw an `InvalidOperationException`. If you would rather ignore unused fields, call `WithIgnoreUnusedFields` on the `DbDataMapper` specified by your connector settings.
+If, when mapping a data record to a type, there are unused fields, e.g. when mapping a data record with two fields to a single integer, MuchAdo will throw an `InvalidOperationException`. If you would rather ignore unused fields, use `WithIgnoreUnusedFields` on the `DbDataMapper` specified by your connector settings.
 :::
 
 ## Strings
@@ -20,9 +20,9 @@ var widgetNames = await connector
     .QueryAsync<string>();
 ```
 
-You can also map a text field to a [`TextReader`](https://learn.microsoft.com/en-us/dotnet/api/system.io.textreader). Dispose the `TextReader` once the text is read.
-
 Be sure to use a nullable `string` (i.e. `string?`) for nullable fields. Since `string` is a reference type, mapping a null field to a non-nullable string will not throw an exception, but the value will be null even though the type is non-nullable.
+
+You can also map a text field to a [`TextReader`](https://learn.microsoft.com/en-us/dotnet/api/system.io.textreader). Dispose the `TextReader` once the text is read.
 
 ## Value types
 
@@ -42,7 +42,7 @@ var widgetHeights = await connector
 
 For efficiency, enumerated types are mapped using their underlying numeric type, usually `int`.
 
-Attempting to map a text field to an enumerated type will throw an exception. To allow a text field to be parsed as an enumerated type, call `WithAllowStringToEnum` on the `DbDataMapper` specified by your connector settings. Keep in mind that a `FormatException` will be thrown if the text fails to parse.
+Attempting to map a text field to an enumerated type will throw an exception. To allow a text field to be parsed as an enumerated type, use `WithAllowStringToEnum` on the `DbDataMapper` specified by your connector settings. Keep in mind that a `FormatException` will be thrown if the text fails to parse.
 
 Enumerated types are value types, so be sure to use nullable types when needed.
 
@@ -52,9 +52,9 @@ A blob can be mapped to a `byte[]` or a `Stream`. Be sure to dispose of the `Str
 
 ## DTOs
 
-If the type isn't one of the types listed above or below, it is assumed to be a DTO (data transfer object) type, i.e. a type with properties that correspond to record fields.
+If the type isn't one of the types listed above or below, it is assumed to be a DTO (data transfer object) type, i.e. a type with properties that correspond to data record fields.
 
-When a DTO type is used, a new instance of the DTO is created, and each record field is mapped to a DTO property whose name matches the field name, ignoring case and any underscores (so `full_name` would map successfully to `FullName`, for example). Read-only properties can be set if there is a constructor with corresponding parameters.
+When a DTO type is used, a new instance of the DTO is created, and each data record field is mapped to a DTO property whose name matches the field name, ignoring case and any underscores (so `full_name` would map successfully to `FullName`, for example). Read-only properties can be set if there is a constructor with corresponding parameters.
 
 ```csharp
 record Widget(long Id, string Name, double? Height);
@@ -64,13 +64,13 @@ var widgets = await connector
     .QueryAsync<Widget>();
 ```
 
-If a DTO property has a `Column` attribute with a non-null `Name` property (e.g. from [System.ComponentModel.DataAnnotations](https://docs.microsoft.com/en-us/dotnet/api/system.componentmodel.dataannotations.schema.columnattribute)), that name is used instead of the field name.
+If a DTO property has a `Column` attribute with a non-null `Name` property (e.g. from [System.ComponentModel.DataAnnotations](https://docs.microsoft.com/en-us/dotnet/api/system.componentmodel.dataannotations.schema.columnattribute)), that name is used instead of the property name.
 
-Not every property of the DTO must be used, but every mapped field must have a corresponding property, unless `WithIgnoreUnusedFields` is used.
+Not every property of the DTO must be used, but every data record field must have a corresponding property, unless `WithIgnoreUnusedFields` is used.
 
 ## Tuples
 
-Use tuples to map multiple record fields at once. Each tuple item is read from the record in order. The record field names are ignored, as are the tuple item names, if any.
+Use tuples to map multiple data record fields at once. Each tuple item is read from the data record in order. The data record field names are ignored, as are the tuple item names, if any.
 
 ```csharp
 var widgetTuples = await connector
@@ -86,7 +86,7 @@ var widgetNameLengths = await connector
     .QueryAsync<(Widget Widget, long NameLength)>();
 ```
 
-If the tuple has two or more multi-field types, all but the last must be terminated by a `null` record value whose name is `null`.
+If the tuple has two or more multi-field types, all but the last must be terminated by a `null` data record value whose field name is `null`, which is easily accomplished by using `null` in the `select` statement.
 
 ```csharp
 var lineage = await connector
@@ -151,7 +151,7 @@ var halvedHeights = await connector
     .QueryAsync(x => x.Get<double?>("height") / 2.0);
 ```
 
-There are also overloads for reading multiple consecutive fields by index or name.
+There are also `Get<T>` overloads for reading multiple consecutive fields by index or name.
 
 ## Custom mapping
 

@@ -83,25 +83,12 @@ If you break out of the loop before all records have been read, the remainder of
 
 ## Using parameters
 
-The simplest way to specify command parameters is to call `CommandFormat` instead of `Command`, which uses [formatted SQL](./formatted-sql.md) to provide the parameter values in the SQL statement.
+The simplest way to specify command parameters is to call `CommandFormat` instead of `Command`, which uses [formatted SQL](./formatted-sql.md) to safely inject parameters into the SQL statement.
 
 ```csharp
 var widgetIds = await connector
     .CommandFormat($"select id from widgets where name = {name}")
     .QueryAsync<long>();
-```
-
-This may look like a possible SQL injection vulnerability, but it is not, since the injected value is replaced with a parameter placeholder in the SQL statement, and the value itself is passed to the command via parameter. The exact syntax of the parameter placeholder depends on the database provider; by default, it uses arbitrarily named parameters like `@ado1` and `@ado2`, but some providers use `$1` and `$2` or even just `?`.
-
-Using this technique with a collection will create one parameter whose value is the collection. If you want to expand a non-empty collection into a parenthesized set of parameters for use with the `IN` keyword, use the `set` format specifier.
-
-```csharp
-var widgetsFromIds = await connector
-    .CommandFormat($"""
-        select id, name, height from widgets
-        where id in {widgetIds:set}
-        """)
-    .QueryAsync<Widget>();
 ```
 
 For more information on using parameters with MuchAdo, see [Formatted SQL](./formatted-sql.md) and [Parameters](./parameters.md).

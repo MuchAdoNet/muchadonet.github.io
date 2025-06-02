@@ -4,15 +4,11 @@ sidebar_position: 7
 
 # Data Mapping
 
-ADO.NET uses the [`IDataRecord`](https://learn.microsoft.com/en-us/dotnet/api/system.data.idatarecord) interface (and classes derived from it) to represent the data provided when executing a database command. A data record has one or more fields; MuchAdo supports mapping those fields to instances of various types.
-
-:::info
-If, when mapping a data record to a type, there are unused fields, e.g. when mapping a data record with two fields to a single integer, MuchAdo will throw an `InvalidOperationException`. If you would rather ignore unused fields, use `WithIgnoreUnusedFields` on the `DbDataMapper` specified by your connector settings.
-:::
+MuchAdo makes it easy to read the data records produced when executing database commands. ADO.NET implements the [`IDataRecord`](https://learn.microsoft.com/en-us/dotnet/api/system.data.idatarecord) interface (and classes derived from it) to represent that data. Each data record has one or more named fields; MuchAdo supports mapping one or more data record fields to instances of various types.
 
 ## Strings
 
-When a field is mapped to `string`, MuchAdo calls the [`GetString`](https://learn.microsoft.com/en-us/dotnet/api/system.data.idatarecord.getstring) method on `IDataRecord`.
+When a data record with a single field is mapped to `string`, MuchAdo calls the [`GetString`](https://learn.microsoft.com/en-us/dotnet/api/system.data.idatarecord.getstring) method on `IDataRecord`.
 
 ```csharp
 var widgetNames = await connector
@@ -20,17 +16,21 @@ var widgetNames = await connector
     .QueryAsync<string>();
 ```
 
-Be sure to use a nullable `string` (i.e. `string?`) for nullable fields. Since `string` is a reference type, mapping a null field to a non-nullable string will not throw an exception, but the value will be null even though the type is non-nullable.
+Be sure to use a nullable `string` (i.e. `string?`) if the field value could be null. Since `string` is a reference type, mapping a null field value to a non-nullable string will not throw an exception, but the value will be null even though the type is non-nullable.
 
 You can also map a text field to a [`TextReader`](https://learn.microsoft.com/en-us/dotnet/api/system.io.textreader). Dispose the `TextReader` once the text is read.
 
+:::info
+If, when mapping a data record to a type, there are unused fields, e.g. when mapping a data record with two fields to a single string, MuchAdo will throw an `InvalidOperationException`. If you would rather ignore unused fields, use `WithIgnoreUnusedFields` on the `DbDataMapper` specified by your connector settings.
+:::
+
 ## Value types
 
-The following value types are mapped by calling `IDataRecord` methods like [`GetInt32`](https://learn.microsoft.com/en-us/dotnet/api/system.data.idatarecord.getint32): `bool`, `byte`, `char`, `Guid`, `short`, `int`, `long`, `float`, `double`, `decimal`, `DateTime`.
+The following value types are mapped by calling `IDataRecord` methods like [`GetInt32`](https://learn.microsoft.com/en-us/dotnet/api/system.data.idatarecord.getint32): `bool`, `byte`, `char`, `short`, `int`, `long`, `float`, `double`, `decimal`, `Guid`, `DateTime`.
 
-The following types are mapped by calling the [`GetFieldValue`](https://learn.microsoft.com/en-us/dotnet/api/system.data.common.dbdatareader.getfieldvalue) method on [`DbDataReader`](https://learn.microsoft.com/en-us/dotnet/api/system.data.common.dbdatareader): `DateTimeOffset`, `sbyte`, `ushort`, `unit`, `ulong`, `TimeSpan`, `DateOnly`, `TimeOnly`. Note that not all ADO.NET providers support these types.
+The following value types are mapped by calling the [`GetFieldValue<T>`](https://learn.microsoft.com/en-us/dotnet/api/system.data.common.dbdatareader.getfieldvalue) method on [`DbDataReader`](https://learn.microsoft.com/en-us/dotnet/api/system.data.common.dbdatareader): `sbyte`, `ushort`, `uint`, `ulong`, `DateTimeOffset`, `TimeSpan`, `DateOnly`, `TimeOnly`. Note that not all ADO.NET providers support these types.
 
-Be sure to use a nullable type for nullable fields. Mapping a null field to a non-nullable value type like `double` will result in an `InvalidOperationException`, since a `double` cannot be null; use `double?` instead, for example.
+Be sure to use a nullable type for if the field value could be null. Mapping a null field value to a non-nullable value type like `double` will result in an `InvalidOperationException`, since a `double` cannot be null; use `double?` instead.
 
 ```csharp
 var widgetHeights = await connector
@@ -66,6 +66,8 @@ var widgets = await connector
 
 If a DTO property has a `Column` attribute with a non-null `Name` property (e.g. from [System.ComponentModel.DataAnnotations](https://docs.microsoft.com/en-us/dotnet/api/system.componentmodel.dataannotations.schema.columnattribute)), that name is used instead of the property name.
 
+If all of the field values are null, a null DTO is returned, rather than a DTO instance with null property values. If this is a possibility for your query, be sure to use a nullable DTO type.
+
 Not every property of the DTO must be used, but every data record field must have a corresponding property, unless `WithIgnoreUnusedFields` is used.
 
 ## Tuples
@@ -86,7 +88,7 @@ var widgetNameLengths = await connector
     .QueryAsync<(Widget Widget, long NameLength)>();
 ```
 
-If the tuple has two or more multi-field types, all but the last must be terminated by a `null` data record value whose field name is `null`, which is easily accomplished by using `null` in the `select` statement.
+If the tuple has two or more multi-field types, all but the last must be terminated by a null data record value whose field name is `null` (case-insensitive), which is easily accomplished by using `null` or `NULL` in the `select` statement.
 
 ```csharp
 var lineage = await connector
@@ -118,6 +120,8 @@ var dynamicWidgets = await connector
 string firstWidgetName = dynamicWidgets[0].name;
 ```
 
+If all of the field values are null, a null object is returned.
+
 :::tip
 To avoid confusion, use `object` when mapping a single field and `dynamic` when mapping multiple fields.
 :::
@@ -132,6 +136,8 @@ var dictionaryWidgets = await connector
     .QueryAsync<Dictionary<string, object?>>();
 var firstWidgetHeight = (double?) dictionaryWidgets[0]["height"];
 ```
+
+If all of the field values are null, a null dictionary is returned.
 
 ## Mapping delegate
 

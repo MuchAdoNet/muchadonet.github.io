@@ -9,7 +9,6 @@ To start a database transaction, call `BeginTransactionAsync` on the connector. 
 To commit the transaction, call `CommitTransactionAsync` on the connector, which commits and then disposes the stored transaction.
 
 ```csharp
-long widgetId;
 await using (await connector.BeginTransactionAsync())
 {
     var existingWidgetId = await connector

@@ -83,15 +83,15 @@ If you break out of the loop before all records have been read, the remainder of
 
 ## Using parameters
 
-The simplest way to specify command parameters is to call `CommandFormat` instead of `Command`, which uses [formatted SQL](./formatted-sql.md) to safely inject parameters into the SQL statement.
+The simplest way to specify command parameters is to call `CommandFormat` instead of `Command`, which uses [formatted SQL](./formatted-sql.md) to safely inject parameter values into the SQL statement.
 
 ```csharp
-var widgetIds = await connector
+var widgetId = await connector
     .CommandFormat($"select id from widgets where name = {name}")
-    .QueryAsync<long>();
+    .QuerySingleAsync<long>();
 ```
 
-For more information on using parameters with MuchAdo, see [Formatted SQL](./formatted-sql.md) and [Parameters](./parameters.md).
+For more information on using parameters with MuchAdo, see [Parameters](./parameters.md).
 
 ## Setting the timeout
 

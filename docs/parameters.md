@@ -27,6 +27,10 @@ var widgetsFromIds = await connector
     .QueryAsync<Widget>();
 ```
 
+:::warning
+The `set` format specifier throws an exception if the collection is empty when the command is executed. Be sure to check for an empty collection and bypass the command or add a conditional to generate valid SQL for that case.
+:::
+
 ## Parameter Sources
 
 When the simple techniques above aren't sufficient, you can use a parameter source, which is derived from `SqlParamSource` and represents an ordered collection of parameters, named or unnamed.
@@ -43,6 +47,10 @@ widgetId = await connector
     .QuerySingleAsync<long>();
 ```
 
+:::note
+The returned object is of type `SqlParam<T>`, which has a `Value` property that can be set, if you want to reuse the object for multiple commands to reduce allocation.
+:::
+
 `Sql.RepeatParam` creates an unnamed parameter designed to be used more than once in the formatted SQL of a single command. For databases that use named or numbered placeholders, the same placeholder is used each time the same object from `Sql.RepeatParam` is used, which could be more efficient.
 
 ```csharp
@@ -56,7 +64,7 @@ await connector
     .ExecuteAsync();
 ```
 
-`Sql.Params` generates unnamed parameters from a collection. The collection is not copied; parameters are generated from the items when the command is executed. If the collection is empty, empty SQL will be produced, which could result in invalid SQL. Generally, you should check for an empty collection and bypass the command or add a conditional to generate valid SQL for that case. The `set` format specifier documented above is normally simpler, but this is equivalent to the example above:
+`Sql.Params` generates unnamed parameters from a collection. The collection is not copied; parameters are generated from the items when the command is executed. The `set` format specifier documented above is normally simpler, but this is equivalent to the example above:
 
 ```csharp
 widgetsFromIds = await connector
@@ -66,6 +74,10 @@ widgetsFromIds = await connector
         """)
     .QueryAsync<Widget>();
 ```
+
+:::warning
+If the collection is empty, empty SQL will be produced, which could result in invalid SQL. As with the `set` format specifier, you should check for an empty collection and bypass the command or add a conditional to generate valid SQL for that case.
+:::
 
 ### Named Parameters
 
@@ -115,28 +127,49 @@ widgetsFromIds = await connector
 
 ### DTOs
 
-`Sql.DtoColumnNames` is useful when selecting fields to map to a DTO.
+`Sql.DtoColumnNames` is useful when selecting fields to map to a DTO (data transfer object).
 
-Use `From` when you're using an explicit table name or alias.
+```csharp
+widgets = await connector
+    .CommandFormat($"select {Sql.DtoColumnNames<Widget>()} from widgets")
+    .QueryAsync<Widget>();
+```
 
-`Sql.DtoParams` generates unnamed parameters for the value of each property of a DTO. It is often used with `Sql.DtoColumnNames` when inserting database records.
+If a DTO property has a `Column` attribute with a non-null `Name` property (e.g. from [System.ComponentModel.DataAnnotations](https://docs.microsoft.com/en-us/dotnet/api/system.componentmodel.dataannotations.schema.columnattribute)), that name is used instead of the property name. If you want to generate `snake_case` column names without having to add `Column` attributes everywhere, use `WithSnakeCaseColumnNames` on the `SqlSyntax` connector setting.
 
-In both cases, you can use `Where` to filter properties by name.
+Chain `Sql.DtoColumnNames` with a call to `From` to include a table name or alias, e.g. `p.height`.
 
-If you prefer named parameters, you can use `Sql.DtoNamedParams`.
+```csharp
+lineage = await connector
+    .CommandFormat($"""
+        select {Sql.DtoColumnNames<Widget>().From("p")}, null,
+            {Sql.DtoColumnNames<Widget>().From("c")}
+        from widgets p
+        join widget_children wc on wc.parent_id = p.id
+        join widgets c on c.id = wc.child_id
+        """)
+    .QueryAsync<(Widget Parent, Widget Child)>();
+```
 
-To add a prefix or suffix to help ensure that the parameter name is unique, use `Renamed`.
+`Sql.DtoParams` generates unnamed parameters for the value of each property of a DTO. It can be used with `Sql.DtoColumnNames` when inserting database records. With both methods, you can use `Where` to filter properties by name.
 
-If you want to manually generate parameter placeholders for a DTO, use `Sql.DtoParamNames`.
+```csharp
+await connector
+    .CommandFormat($"""
+        insert into widgets
+            ({Sql.DtoColumnNames(newWidget)
+                .Where(x => x != nameof(Widget.Id))})
+        values
+            ({Sql.DtoParams(newWidget)
+                .Where(x => x != nameof(Widget.Id))})
+        """)
+    .ExecuteAsync();
+```
 
-To filter out parameters by name, use `Where`.
+If you prefer named parameters, you can use `Sql.DtoNamedParams`. To add a prefix or suffix to help ensure that the parameter name is unique, chain a call to `Renamed`.
 
-To transform the names of the parameters, use `Renamed`.
+If you want to generate just the named parameter placeholders for a DTO, use `Sql.DtoParamNames`.
 
-If you are calling a stored procedure that requires parameters, you can use the same methods that are documented in [formatted SQL](./formatted-sql.md), but include the parameter sources as arguments after the stored procedure name.
+### Combine Sources
 
-You can do the same if you are executing a command but adding the parameter placeholders yourself.
-
-A `SqlParamSource` represents a list of parameters. It derives from `SqlSource`, and when one used as a SQL fragment, it generates parameter placeholders for parameters with the corresponding values, comma-separated in the SQL if there are more than one. See [Parameters](./parameters.md) for more information about `SqlParamSource`.
-
-The returned object is of type `SqlParam<T>`, which has a `Value` property that can be set, if you want to reuse the object for multiple commands to reduce allocation.
+If you need to combine multiple parameter sources into a single parameter source, use `SqlParamSourceList`.

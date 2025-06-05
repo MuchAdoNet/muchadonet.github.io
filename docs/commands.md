@@ -37,7 +37,7 @@ var widgetTuples = await connector
     .QueryAsync<(long Id, string Name)>();
 ```
 
-You can also read record fields by name into the properties of a DTO.
+You can also read record fields by name into the properties of a DTO (data transfer object).
 
 ```csharp
 record Widget(long Id, string Name, double? Height);

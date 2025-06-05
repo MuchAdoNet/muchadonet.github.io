@@ -79,3 +79,7 @@ return await connector
     .CommandFormat($"select count(*) from widgets {Sql.Where(conditions)}")
     .QuerySingleAsync<int>();
 ```
+
+:::tip
+It doesn't matter to the database, but if you want MuchAdo to generate lowercase SQL keywords, use `WithLowercaseKeywords` on your `SqlSyntax` connector setting.
+:::

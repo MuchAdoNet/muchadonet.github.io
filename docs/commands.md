@@ -124,6 +124,12 @@ await connector
 
 To cancel a running command, cancel the `CancellationToken` passed to the method that executed the command, or call `Cancel` on the connector.
 
+## Executing Event
+
+The `Executing` event on the connector is raised immediately before a command is executed.
+
 ## ADO.NET access
 
 ADO.NET uses [`IDbCommand`](https://learn.microsoft.com/en-us/dotnet/api/system.data.idbcommand) to represent a database command and its collection of parameters. MuchAdo creates this command object (and any parameter objects) just in time as needed when the command is executed. While a command is being executed, the `ActiveCommand` property of the connector will be set to the corresponding `IDbCommand`.
+
+ADO.NET uses [`IDataReader`](https://learn.microsoft.com/en-us/dotnet/api/system.data.idatareader) to read any records that result from a database command. While records are being read, the `ActiveReader` property of the connector will be set to the corresponding `IDataReader`.

@@ -14,6 +14,17 @@ var widgetId = await connector
 
 This may look like a potential SQL injection vulnerability, but it is not, since the injected value is replaced with a parameter placeholder in the SQL statement, and the value itself is passed to the command via matching parameter. The exact syntax of the parameter placeholder depends on the database provider; by default, it uses arbitrarily named parameters like `@ado1` and `@ado2`, but some providers use `$1` and `$2` or even just `?`.
 
+:::warning
+Using string interpolation with `Command` instead of `CommandFormat` is still a potential security risk, so be sure to use `CommandFormat` when you want safe parameter injection.
+
+```csharp
+// don't do this
+var widgetId = await connector
+    .Command($"select id from widgets where name = {name}")
+    .QuerySingleAsync<long>();
+```
+:::
+
 ## Collection Parameters
 
 Using formatted SQL with a collection will create one parameter whose value is the collection. If you want to expand a non-empty collection into a parenthesized set of parameters for use with the `IN` keyword, use the `set` format specifier.
@@ -166,9 +177,34 @@ await connector
     .ExecuteAsync();
 ```
 
-If you prefer named parameters, you can use `Sql.DtoNamedParams`. To add a prefix or suffix to help ensure that the parameter name is unique, chain a call to `Renamed`.
+If you prefer named parameters, you can use `Sql.DtoNamedParams`.
 
 If you want to generate just the named parameter placeholders for a DTO, use `Sql.DtoParamNames`.
+
+To add a prefix or suffix to help ensure that the parameter name is unique, chain a call to `Renamed`.
+
+### LIKE Parameters
+
+Use `Sql.LikeParamStartsWith` to create an unnamed string parameter with the specified prefix followed by a `%`, where the prefix is escaped as necessary.
+
+```csharp
+var widgetsWithNamePrefix = await connector
+    .CommandFormat($"""
+        select id, name, height from widgets
+        where name like {Sql.LikeParamStartsWith(prefix)}
+        """)
+    .QueryAsync<Widget>();
+```
+
+Use `Sql.LikeParamEndsWith`, `Sql.LikeParamContains`, or `Sql.LikeParam` for other `LIKE` patterns.
+
+### Parameter Types
+
+MuchAdo creates ADO.NET parameter objects just in time when the command is executed. If you need to set the `DbType` or other properties on the `IDataParameter`, you can use `SqlParamType` or create the parameter object yourself.
+
+`Sql.Param` has an overload that takes a `SqlParamType`, which can be used to set whatever parameter properties you need to set.
+
+Alternatively, if you create an `IDataParameter` and pass it as a parameter value, MuchAdo will use it as-is rather than create a new parameter for it. In fact, an `IDataParameter` will be implicitly converted to a `SqlParamSource` as necessary.
 
 ### Combine Sources
 

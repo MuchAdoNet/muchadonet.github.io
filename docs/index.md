@@ -22,4 +22,4 @@ var shortWidgets = await connector
 * [map data records](./data-mapping.md) into simple types, tuples, and DTOs
 * use [formatted SQL](./formatted-sql.md) to inject parameters and build SQL statements
 * execute stored procedures with [parameters](./parameters.md)
-* prepare and/or cache database commands for better performance
+* prepare and/or cache database commands for [better performance](./optimizations.md)

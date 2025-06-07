@@ -23,6 +23,8 @@ var widgetId = await connector
     .Command($"select id from widgets where name = {name}")
     .QuerySingleAsync<long>();
 ```
+
+Use [MuchAdo.Analyzers](./analyzers.md) to generate a compiler warning when `Command` is used with an interpolated string.
 :::
 
 ## Collection Parameters

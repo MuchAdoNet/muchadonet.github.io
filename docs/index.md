@@ -23,3 +23,4 @@ var shortWidgets = await connector
 * use [formatted SQL](./formatted-sql.md) to build SQL statements
 * use [parameters](./parameters.md) with commands and stored procedures
 * [improve performance](./optimizations.md) by preparing, caching, and pooling
+* provide [analyzers](./analyzers.md) to help ensure proper use of the library

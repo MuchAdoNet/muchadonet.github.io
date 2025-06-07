@@ -4,7 +4,7 @@ sidebar_position: 1
 
 # Introduction
 
-The **MuchAdo** class library provides an intuitive API for [working with relational databases](./databases.md) like MySQL, PostgreSQL, SQLite, and Microsoft SQL Server. It is similar to Dapper and other micro ORMs for .NET.
+The **MuchAdo** class library provides an intuitive API for [working with relational databases](./databases.md) like MySQL, PostgreSQL, SQLite, and Microsoft SQL Server. It is [similar to Dapper](./other-libraries.md) and other micro ORMs for .NET.
 
 ```csharp
 var shortWidgets = await connector
@@ -20,6 +20,6 @@ var shortWidgets = await connector
 * read multiple result sets from [command batches](./command-batches.md)
 * track the [current transaction](./transactions.md) for correct command execution
 * [map data records](./data-mapping.md) into simple types, tuples, and DTOs
-* use [formatted SQL](./formatted-sql.md) to inject parameters and build SQL statements
-* execute stored procedures with [parameters](./parameters.md)
-* prepare and/or cache database commands for [better performance](./optimizations.md)
+* use [formatted SQL](./formatted-sql.md) to build SQL statements
+* use [parameters](./parameters.md) with commands and stored procedures
+* [improve performance](./optimizations.md) by preparing, caching, and pooling

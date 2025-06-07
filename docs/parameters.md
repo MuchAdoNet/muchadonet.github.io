@@ -179,7 +179,16 @@ await connector
 
 If you prefer named parameters, you can use `Sql.DtoNamedParams`.
 
-If you want to generate just the named parameter placeholders for a DTO, use `Sql.DtoParamNames`.
+```csharp
+widgetIds = await connector
+    .Command("""
+        select id from widgets
+        where height between @minHeight and @maxHeight
+        """, Sql.DtoNamedParams(new { minHeight, maxHeight }))
+    .QueryAsync<long>();
+```
+
+If you want to generate named parameter placeholders for a DTO without the values, use `Sql.DtoParamNames`.
 
 To add a prefix or suffix to help ensure that the parameter name is unique, chain a call to `Renamed`.
 

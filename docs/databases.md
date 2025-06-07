@@ -21,8 +21,8 @@ Use the [MuchAdo.MySql](https://www.nuget.org/packages/MuchAdo.MySql) NuGet pack
 
 Use the [MuchAdo.Npgsql](https://www.nuget.org/packages/MuchAdo.Npgsql) NuGet package if you are using [Npgsql](https://www.npgsql.org/), the recommended provider for [PostgreSQL](https://www.postgresql.org/). The connector class is `NpgsqlDbConnector`. Key enhancements:
 
-* uses `$1`, `$2`, etc. for unnamed parameter placeholders
-* uses typed parameters to avoid boxing of value types
+* uses `$1`, `$2`, etc. for unnamed parameter placeholders, i.e. supports [raw mode](https://www.roji.org/parameters-batching-and-sql-rewriting)
+* uses [strongly-typed parameters](https://www.npgsql.org/doc/basic-usage.html#strongly-typed-parameters) to avoid boxing of value types
 * supports async database access and command batches in older .NET frameworks
 
 ## SQLite

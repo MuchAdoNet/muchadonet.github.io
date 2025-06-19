@@ -4,7 +4,7 @@
 // There are various equivalent ways to declare your Docusaurus config.
 // See: https://docusaurus.io/docs/api/docusaurus-config
 
-import {themes as prismThemes} from 'prism-react-renderer';
+import { themes as prismThemes } from 'prism-react-renderer';
 import rehypeShiki from "@shikijs/rehype";
 
 // This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
@@ -33,7 +33,18 @@ const config = {
 
   markdown: {
     format: "md"
-  },  
+  },
+
+  themes: [
+    [
+      require.resolve("@easyops-cn/docusaurus-search-local"),
+      {
+        indexBlog: false,
+        hashed: true,
+        docsRouteBasePath: '/',
+      },
+    ],
+  ],
 
   presets: [
     [
@@ -43,8 +54,8 @@ const config = {
         docs: {
           routeBasePath: '/',
           sidebarPath: './sidebars.js',
-          beforeDefaultRehypePlugins: [ 
-            [ 
+          beforeDefaultRehypePlugins: [
+            [
               rehypeShiki,
               {
                 themes: {
@@ -54,7 +65,8 @@ const config = {
                 langs: ["csharp"],
               },
             ],
-          ],        },
+          ],
+        },
         blog: false,
         theme: {
           customCss: './src/css/custom.css',

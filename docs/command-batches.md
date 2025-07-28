@@ -48,6 +48,34 @@ await using (var reader = await connector
 }
 ```
 
+`QueryMultipleAsync` also has an overload with a delegate parameter that automatically disposes the result set reader.
+
+```csharp
+var (moreWidgetNames, moreWidgetIds) = await connector
+    .Command("select name from widgets where height < 5")
+    .Command("select id from widgets where height >= 5")
+    .QueryMultipleAsync(async reader =>
+        (ShortWidgetNames: await reader.ReadAsync<string>(),
+            LongWidgetIds: await reader.ReadAsync<long>()));
+```
+
+## Empty command batch
+
+When building a command batch in a loop, it may be simpler to call `CreateCommandBatch` and start with an empty command batch.
+
+```csharp
+var batch = connector.CreateCommandBatch();
+foreach (var widget in widgetsToCreate)
+{
+    batch.CommandFormat($"""
+        insert into widgets (name, height)
+            values ({widget.Name}, {widget.Height})
+        """);
+    batch.Command("select last_insert_id()");
+}
+var newWidgetIds = await batch.QueryAsync<long>();
+```
+
 ## ADO.NET access
 
 While a command batch is being executed, the `ActiveBatch` property of the connector will be set to the corresponding `DbBatch`.

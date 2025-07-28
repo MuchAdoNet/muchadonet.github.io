@@ -30,13 +30,39 @@ When the object returned from `BeginTransactionAsync` is disposed, the transacti
 ADO.NET requres that the [`Transaction`](https://learn.microsoft.com/en-us/dotnet/api/system.data.idbcommand.transaction) property of [`IDbCommand`](https://docs.microsoft.com/dotnet/api/system.data.idbcommand) be set to the current transaction. MuchAdo takes care of that automatically when creating and executing commands.
 :::
 
-`BeginTransactionAsync` has an overload that takes an [`IsolationLevel`](https://learn.microsoft.com/en-us/dotnet/api/system.data.isolationlevel). The default isolation level is provider-specific, but you can also override it with the `DefaultIsolationLevel` connector setting.
+You can explicitly roll back the current transaction with `RollbackTransactionAsync`, but that's not typically necessary, since an uncommitted transaction will be rolled back when it is disposed.
+
+## Auto-commit transactions
+
+To automatically commit the database transaction, you can use `ExecuteInTransactionAsync`:
+
+```csharp
+widgetId = await connector.ExecuteInTransactionAsync(async () =>
+{
+    var existingWidgetId = await connector
+        .CommandFormat($"select id from widgets where name = {name}")
+        .QuerySingleOrDefaultAsync<long?>();
+    return existingWidgetId ?? await connector
+        .CommandFormat(
+            $"insert into widgets (name, height) values ({name}, {height})")
+        .Command("select last_insert_id()")
+        .QuerySingleAsync<long>();
+});
+```
+
+To wrap an auto-commit transaction around a command batch, chain a call to `InTransaction` before executing the command.
+
+## Transaction settings
+
+The transaction methods have overloads that accept a `DbTransactionSettings`, which is typically used to specify the transaction isolation level. Feel free to use an [`IsolationLevel`](https://learn.microsoft.com/en-us/dotnet/api/system.data.isolationlevel) directly; it will be implicitly converted to `DbTransactionSettings`.
+
+The default isolation level is provider-specific, but you can override it with the `DefaultTransactionSettings` connector setting.
 
 :::tip
-If you are using MuchAdo.Sqlite, there are additional overloads that include the `deferred` parameter for creating [deferred transactions](https://learn.microsoft.com/en-us/dotnet/standard/data/sqlite/transactions#deferred-transactions).
+If you are using MuchAdo.Sqlite, you can use `SqliteDbTransactionSettings` to create [deferred transactions](https://learn.microsoft.com/en-us/dotnet/standard/data/sqlite/transactions#deferred-transactions).
 :::
 
-You can explicitly roll back the current transaction with `RollbackTransactionAsync`, but that's not typically necessary, since an uncommitted transaction will be rolled back when it is disposed.
+## ADO.NET access
 
 You can attach an existing `IDbTransaction` to the connector by calling `AttachTransaction`.
 

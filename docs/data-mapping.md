@@ -139,6 +139,14 @@ var firstWidgetHeight = (double?) dictionaryWidgets[0]["height"];
 
 If all of the field values are null, a null dictionary is returned.
 
+## Custom mapping
+
+To directly support types not mentioned above, you can create a custom mapping:
+
+* Derive a class from `DbTypeMapper<T>`, overriding the `FieldCount` and `MapCore` methods.
+* Derive a class from `DbTypeMapperFactory`, overriding `TryCreateTypeMapper<T>` and returning an instance of your type mapper when the type matches.
+* Set the `DataMapper` connector setting to a data mapper that includes an instance of your type mapper factory.
+
 ## Mapping delegate
 
 For more control over the mapping, the client can specify the `map` parameter, which is of type `Func<DbConnectorRecord, T>`. That delegate will be called for each data record returned by the query. Use one of the `Get<T>` methods to map one or more fields to the specified type.
@@ -157,12 +165,8 @@ var halvedHeights = await connector
     .QueryAsync(x => x.Get<double?>("height") / 2.0);
 ```
 
-There are also `Get<T>` overloads for reading multiple consecutive fields by index or name.
+There are also `Get<T>` overloads for reading multiple consecutive fields by index or name, as well as a `FieldCount` property and `GetOrdinal` and `GetName` methods.
 
-## Custom mapping
+## ADO.NET access
 
-To directly support types not mentioned above, you can create a custom mapping:
-
-* Derive a class from `DbTypeMapper<T>`, overriding the `FieldCount` and `MapCore` methods.
-* Derive a class from `DbTypeMapperFactory`, overriding `TryCreateTypeMapper<T>` and returning an instance of your type mapper when the type matches.
-* Set the `DataMapper` connector setting to a data mapper that includes an instance of your type mapper factory.
+If you need to access the `IDataRecord` that is wrapped by `DbConnectorRecord`, use the `As<T>` method.

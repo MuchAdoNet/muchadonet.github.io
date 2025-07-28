@@ -219,4 +219,4 @@ Alternatively, if you create an `IDataParameter` and pass it as a parameter valu
 
 ### Combine Sources
 
-If you need to combine multiple parameter sources into a single parameter source, use `SqlParamSourceList`.
+If you need to combine multiple parameter sources into a single parameter source, use `Sql.Combine`.

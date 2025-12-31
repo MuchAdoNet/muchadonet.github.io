@@ -126,7 +126,7 @@ To cancel a running command, cancel the `CancellationToken` passed to the method
 
 ## Executing Event
 
-The `Executing` event on the connector is raised immediately before a command is executed.
+The `Executing` event is raised right before a command or command batch is executed. The handler receives a `DbConnectorExecutingEventArgs`, with the pending `DbConnectorCommandBatch` available via the `CommandBatch` property. Use the event for logging, to prepare and/or cache all commands, etc.
 
 ## ADO.NET access
 

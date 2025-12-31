@@ -21,3 +21,5 @@ If you want to automatically cache all commands, use the `CacheCommands` connect
 ## Connector Pooling
 
 Use `DbConnectorPool` to create connectors if you want to reuse them. This can be helpful with ADO.NET providers that don't do connection pooling. It also extends the life of cached commands, since they are stored with the pooled connector.
+
+When a connector is returned to the pool (by disposing it), its connection stays open and any cached commands remain available for reuse. Avoid calling `CloseConnection`/`CloseConnectionAsync` on pooled connectors so the underlying connection stays warm. Configure the pool with `DbConnectorPoolSettings.CreateConnector`, which should create a new connector (with its own underlying connection) when the pool is empty. Pooled connectors should still be treated as single-use at a time; don’t share the same connector concurrently across threads.

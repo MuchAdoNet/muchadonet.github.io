@@ -68,7 +68,7 @@ If you are using MuchAdo.Sqlite, you can use `SqliteDbTransactionSettings` to cr
 
 ## ADO.NET access
 
-You can attach an existing `IDbTransaction` to the connector by calling `AttachTransaction`.
+You can attach an existing `IDbTransaction` to the connector by calling `AttachTransaction`. Call it only when the connection is already open, and dispose the returned object when you are done to clear the attached transaction. Use the `noDispose` parameter when the transaction is owned elsewhere to prevent MuchAdo from disposing it.
 
 If you need to access the `IDbTransaction` that is stored by the connector, use the `Transaction` property. If there is no active transaction, the property will be null.
 

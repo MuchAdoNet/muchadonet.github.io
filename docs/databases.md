@@ -30,6 +30,7 @@ Use the [MuchAdo.Npgsql](https://www.nuget.org/packages/MuchAdo.Npgsql) NuGet pa
 Use the [MuchAdo.Sqlite](https://www.nuget.org/packages/MuchAdo.Sqlite) NuGet package if you are using [Microsoft.Data.Sqlite](https://learn.microsoft.com/en-us/dotnet/standard/data/sqlite/), the recommended provider for [SQLite](https://www.sqlite.org/). The connector class is `SqliteDbConnector`. Key enhancement:
 
 * supports deferred transactions
+* emulates command batching (not natively supported by Microsoft.Data.Sqlite as of this writing)
 
 ## SQL Server
 

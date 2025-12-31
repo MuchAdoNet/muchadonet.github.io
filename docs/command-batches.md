@@ -26,7 +26,7 @@ var nextWidgetId = connector
 ```
 
 :::tip
-Batching commands with embedded databases like SQLite may actually hurt performance. Consider executing each command separately instead.
+Microsoft.Data.Sqlite does not support `DbBatch` (as of this writing), but [MuchAdo.Sqlite](./databases.md#sqlite) emulates support, so either syntax can be used.
 :::
 
 Note that any timeout specified by `WithTimeout` applies to the entire command batch, not an individual command.

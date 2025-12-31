@@ -52,6 +52,10 @@ widgetId = await connector.ExecuteInTransactionAsync(async () =>
 
 To wrap an auto-commit transaction around a command batch, chain a call to `InTransaction` before executing the command.
 
+:::warning
+Record-by-record enumeration (`Enumerate`/`EnumerateAsync`) cannot be used together with `InTransaction`. If you need automatic transactions via `InTransaction`, use the list-returning methods (`Query`/`QueryAsync`) instead. Similarly, `QueryMultiple`/`QueryMultipleAsync` without the mapping delegate cannot be paired with `InTransaction`; use the delegate overload or manage the transaction manually.
+:::
+
 ## Transaction settings
 
 The transaction methods have overloads that accept a `DbTransactionSettings`, which is typically used to specify the transaction isolation level. Feel free to use an [`IsolationLevel`](https://learn.microsoft.com/en-us/dotnet/api/system.data.isolationlevel) directly; it will be implicitly converted to `DbTransactionSettings`.

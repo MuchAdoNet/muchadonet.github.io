@@ -53,6 +53,8 @@ private static readonly MySqlDbConnectorSettings s_connectorSettings = new()
 
 To attach an `IDbConnection` to a connector without disposing it when the connector is disposed, use the `NoDisposeConnection` connector setting. If the attached connection is open, it will be kept open even after the connector is disposed.
 
+To dispose an arbitrary object when the connector is disposed, call `AttachDisposable` on the connector after it is created.
+
 ## ADO.NET access
 
 If you need to access the `IDbConnection` that is wrapped by the connector, use the `Connection` property. To automatically open the connection if it is not already open, use `GetOpenConnectionAsync` instead.

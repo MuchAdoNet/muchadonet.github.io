@@ -13,7 +13,7 @@ If you are using a database provider with its own MuchAdo package, you should us
 Use the [MuchAdo.MySql](https://www.nuget.org/packages/MuchAdo.MySql) NuGet package if you are using [MySqlConnector](https://mysqlconnector.net/), the recommended provider for [MySQL](https://www.mysql.com/). The connector class is `MySqlDbConnector`. Key enhancements:
 
 * uses `?` for unnamed parameter placeholders
-* supports provider-specific types like `MySqlGeometry`
+* supports provider-specific types `MySqlDateTime`, `MySqlDecimal`, and `MySqlGeometry`
 * supports async database access and command batches in older .NET frameworks
 * uses backticks when quoting SQL identifiers
 

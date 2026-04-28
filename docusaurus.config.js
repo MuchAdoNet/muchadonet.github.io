@@ -56,6 +56,7 @@ const config = {
         docs: {
           routeBasePath: '/',
           sidebarPath: './sidebars.js',
+          editUrl: 'https://github.com/MuchAdoNet/muchadonet.github.io/tree/master/',
           beforeDefaultRehypePlugins: [
             [
               rehypeShiki,

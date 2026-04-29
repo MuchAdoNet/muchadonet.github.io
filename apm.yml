@@ -1,0 +1,10 @@
+name: muchadonet.github.io
+version: 1.0.0
+description: APM project for muchadonet.github.io
+author: Ed Ball
+dependencies:
+  apm:
+  - Faithlife/RepoConventions/skills/create-repo-conventions
+  mcp: []
+includes: auto
+scripts: {}

@@ -1,15 +1,19 @@
 # MuchAdo Skill Convention
 
-This convention builds a Copilot skill for MuchAdo from the Docusaurus documentation in `docs`.
+This convention builds a Copilot skill for MuchAdo from the Docusaurus documentation published alongside the convention.
+
+## Source Data
+
+The convention resolves its Markdown source from `docs` relative to the convention script location, not from the target repository root. This lets the convention generate the same skill content when it is applied to other repositories.
 
 ## Output
 
-The convention writes the skill to `static/skills/muchado` so the static site publishes it with the rest of the generated assets.
+The convention writes the skill to `skills/muchado` in the target repository.
 
 The generated structure is:
 
 ```text
-static/skills/muchado/
+skills/muchado/
   SKILL.md
   references/
     analyzers.md
@@ -36,4 +40,4 @@ This convention does not currently support settings.
 
 ## Requirements
 
-The convention runs with PowerShell 7 from the root of the target repository. The target repository must contain `docs/README.md`.
+The convention runs with PowerShell 7 from the root of the target repository.

@@ -2,10 +2,11 @@ Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 
-$repoRoot = (Get-Location).Path
-$docsDirectory = Join-Path $repoRoot 'docs'
+$targetRepoRoot = (Get-Location).Path
+$sourceRepoRoot = (Resolve-Path -LiteralPath (Join-Path $PSScriptRoot '..' '..' '..')).Path
+$docsDirectory = Join-Path $sourceRepoRoot 'docs'
 $mainDocPath = Join-Path $docsDirectory 'README.md'
-$skillDirectory = Join-Path $repoRoot 'skills/muchado'
+$skillDirectory = Join-Path $targetRepoRoot 'skills' 'muchado'
 $referencesDirectory = Join-Path $skillDirectory 'references'
 
 if (-not (Test-Path -LiteralPath $mainDocPath -PathType Leaf)) {

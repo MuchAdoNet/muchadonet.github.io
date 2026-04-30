@@ -5,7 +5,7 @@ $ErrorActionPreference = 'Stop'
 $repoRoot = (Get-Location).Path
 $docsDirectory = Join-Path $repoRoot 'docs'
 $mainDocPath = Join-Path $docsDirectory 'README.md'
-$skillDirectory = Join-Path $repoRoot 'static/skills/muchado'
+$skillDirectory = Join-Path $repoRoot 'skills/muchado'
 $referencesDirectory = Join-Path $skillDirectory 'references'
 
 if (-not (Test-Path -LiteralPath $mainDocPath -PathType Leaf)) {
@@ -98,4 +98,4 @@ Get-ChildItem -LiteralPath $referencesDirectory -Filter '*.md' -File | ForEach-O
     }
 }
 
-Write-Host "Built MuchAdo skill at static/skills/muchado from docs."
+Write-Host "Built MuchAdo skill at skills/muchado from docs."

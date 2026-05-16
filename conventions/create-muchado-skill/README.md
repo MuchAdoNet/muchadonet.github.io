@@ -1,4 +1,4 @@
-# MuchAdo Skill Convention
+# create-muchado-skill
 
 This convention builds a Copilot skill for MuchAdo from the Docusaurus documentation published alongside the convention.
 

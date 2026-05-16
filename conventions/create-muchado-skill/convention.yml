@@ -1,5 +1,5 @@
 conventions:
-  - path: Faithlife/CodingGuidelines/gitattributes-section
+  - path: Faithlife/CodingGuidelines/conventions/gitattributes-section
     commit:
       message: Update .gitattributes for generated skill
     settings:

@@ -3,10 +3,10 @@ $ErrorActionPreference = 'Stop'
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 
 $targetRepoRoot = (Get-Location).Path
-$sourceRepoRoot = (Resolve-Path -LiteralPath (Join-Path $PSScriptRoot '..' '..' '..')).Path
+$sourceRepoRoot = (Resolve-Path -LiteralPath (Join-Path $PSScriptRoot '..' '..')).Path
 $docsDirectory = Join-Path $sourceRepoRoot 'docs'
 $mainDocPath = Join-Path $docsDirectory 'README.md'
-$skillDirectory = Join-Path $targetRepoRoot 'skills' 'muchado'
+$skillDirectory = Join-Path $targetRepoRoot 'skill'
 $referencesDirectory = Join-Path $skillDirectory 'references'
 
 if (-not (Test-Path -LiteralPath $mainDocPath -PathType Leaf)) {
@@ -99,4 +99,4 @@ Get-ChildItem -LiteralPath $referencesDirectory -Filter '*.md' -File | ForEach-O
     }
 }
 
-Write-Host "Built MuchAdo skill at skills/muchado from docs."
+Write-Host "Built MuchAdo skill at skill from docs."

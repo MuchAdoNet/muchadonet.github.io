@@ -134,11 +134,6 @@ Write-Utf8NoBomFile -Path (Join-Path $skillDirectory 'SKILL.md') -Content $skill
 $readmeSection = Remove-IntroductionHeading -Content $mainBody
 $readmeSection = Rewrite-ReadmeDocumentationLinks -Content $readmeSection
 $readmeSection = $readmeSection.Trim()
-$readmeSection = @"
-$readmeSection
-
-For more information, please check out our [comprehensive documentation](https://muchado.net/)!
-"@
 
 $readmeContent = Get-Content -Raw -LiteralPath $readmePath
 $readmeContent = Update-GeneratedReadmeSection -Content $readmeContent -GeneratedSection $readmeSection

@@ -17,13 +17,17 @@ To use MuchAdo, add a reference to the [NuGet package](./databases.md) that corr
 
 ## Key Features
 
-* open and close [database connections](./connections.md) automatically
-* use a fluent API to [execute commands](./commands.md) and read data
-* read multiple result sets from [command batches](./command-batches.md)
-* leverage [transactions](./transactions.md) simply and correctly
-* [map data records](./data-mapping.md) into simple types, tuples, and DTOs
-* use [formatted SQL](./formatted-sql.md) to build SQL statements
-* specify [parameters](./parameters.md) for commands and stored procedures
-* support [resilience](./resilience.md) by retrying transient failures
-* [improve performance](./optimizations.md) by preparing, caching, and pooling
-* provide [analyzers](./analyzers.md) to help ensure proper use of the library
+Follow the links below for detailed information on MuchAdo features.
+
+* [**Databases**](./databases.md) — Work with ADO.NET providers, including provider-specific packages and connector classes for MySQL, PostgreSQL, SQLite, and Microsoft SQL Server.
+* [**Connections**](./connections.md) — Create and dispose connectors, open and close connections automatically, and configure connector settings.
+* [**Commands**](./commands.md) — Execute SQL and stored procedures, read records with query and enumeration methods, set command timeouts, cancel commands, and handle execution events.
+* [**Command Batches**](./command-batches.md) — Execute multiple SQL statements in one database call, read multiple result sets, and build batches incrementally.
+* [**Transactions**](./transactions.md) — Run manual and automatic transactions, configure transaction settings, roll back uncommitted work, and attach existing transactions.
+* [**Data Mapping**](./data-mapping.md) — Map data records to strings, value types, enums, blobs, DTOs, tuples, dynamic objects, dictionaries, custom mappers, and mapping delegates.
+* [**Formatted SQL**](./formatted-sql.md) — Build SQL from interpolated fragments and parameter values, including raw SQL, quoted names, concatenation helpers, lists, tuples, clauses, and SQL keyword helpers.
+* [**Parameters**](./parameters.md) — Inject parameters safely, expand collection parameters, use named and unnamed parameter sources, generate DTO-based parameters, create `LIKE` parameters, set parameter types, and combine parameter sources.
+* [**Resilience**](./resilience.md) — Retry opening connections, running transactions, executing commands or command batches, and wrapping arbitrary idempotent actions.
+* [**Optimizations**](./optimizations.md) — Improve performance with prepared commands, cached commands, and connector pooling.
+* [**Analyzers**](./analyzers.md) — Add analyzer warnings for potentially incorrect library usage, such as interpolated strings passed to `Command`.
+* [**Other Libraries**](./other-libraries.md) — Compare MuchAdo with Dapper across connection handling, query buffering, command batching, transaction tracking, mapping, SQL building, parameters, and optimizations.

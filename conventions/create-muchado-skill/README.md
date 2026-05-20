@@ -4,18 +4,19 @@ This convention builds a Copilot skill for MuchAdo from the Docusaurus documenta
 
 ## Output
 
-The convention writes the skill to `skill` in the target repository.
+The convention writes the skill to `skills/muchado` in the target repository.
 
 The generated structure is:
 
 ```text
-skill/
-  SKILL.md
-  references/
-    analyzers.md
-    command-batches.md
-    commands.md
-    ...
+skills/
+  muchado/
+    SKILL.md
+    references/
+      analyzers.md
+      command-batches.md
+      commands.md
+      ...
 ```
 
 `docs/README.md` becomes the main `SKILL.md` documentation. The other Markdown files in `docs` are copied into `references`.

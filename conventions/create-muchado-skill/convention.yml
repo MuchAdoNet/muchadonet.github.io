@@ -5,4 +5,4 @@ conventions:
     settings:
       name: create-muchado-skill
       text: |
-        /skill/** linguist-generated=true
+        /skills/muchado/** linguist-generated=true

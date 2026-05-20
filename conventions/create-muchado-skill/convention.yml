@@ -1,8 +1,0 @@
-conventions:
-  - path: Faithlife/CodingGuidelines/conventions/gitattributes-section
-    commit:
-      message: Update .gitattributes for generated skill
-    settings:
-      name: create-muchado-skill
-      text: |
-        /skills/muchado/** linguist-generated=true

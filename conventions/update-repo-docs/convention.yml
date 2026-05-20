@@ -1,0 +1,8 @@
+conventions:
+  - path: Faithlife/CodingGuidelines/conventions/gitattributes-section
+    commit:
+      message: Update .gitattributes for generated repo docs
+    settings:
+      name: update-repo-docs
+      text: |
+        /skills/muchado/** linguist-generated=true

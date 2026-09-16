@@ -80,7 +80,20 @@ await foreach (var widget in connector
 ```
 
 :::tip
-If you break out of the loop before all records have been read, the remainder of the data may still be read under the hood. It is best to avoid this situation by only querying for data that you need, but if you want to automatically cancel the command when all of the records haven't been read, set the `CancelUnfinishedCommands` connector setting.
+If you break out of the loop before all records have been read, the remainder of the data may still be read under the hood. It is best to avoid this situation by only querying for data that you need, but you can automatically cancel an unfinished command by setting the `CancelUnfinishedCommands` connector setting or by calling `CancelUnfinished()` on an individual command:
+
+```csharp
+await foreach (var widget in connector
+    .Command("select id, name, height from widgets")
+    .CancelUnfinished()
+    .EnumerateAsync<Widget>())
+{
+    if (widget.Id == targetId)
+        break;
+}
+```
+
+The command setting overrides the connector setting. Use `CancelUnfinished(false)` to opt out for an individual command when the connector default is enabled.
 :::
 
 ## Using parameters

@@ -65,6 +65,10 @@ If you would rather ignore any additional records after the first, call `QueryFi
 
 If you don't want to throw an exception when there are no records, call `QuerySingleOrDefaultAsync<T>` or `QueryFirstOrDefaultAsync<T>`, which return `default(T)` when the query returns no data records.
 
+:::tip
+When you only need one record, consider adding `limit 1` to the SQL statement to prevent unwanted records from being read and ignored. To automatically cancel a command with additional records, use the same technique as [lazy reading](#lazy-reading) below.
+:::
+
 ### Lazy reading
 
 Reading all of the records at once is usually best for performance, but if you would rather read the records one at a time, use `await foreach` with `EnumerateAsync<T>`.
